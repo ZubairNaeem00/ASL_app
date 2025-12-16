@@ -40,13 +40,23 @@
             align-items: center;
         }
 
+        .video-wrapper {
+            position: relative;
+        }
+
         video {
             width: 520px;
             max-width: 100%;
-            height: auto;
             border-radius: 12px;
             border: 3px solid #00ff99;
             background: #000;
+        }
+
+        canvas.overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
 
         button {
@@ -113,7 +123,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Footer strip */
         .footer-strip {
             margin-top: 20px;
             background: rgba(0,0,0,0.35);
@@ -133,23 +142,19 @@
 
     <!-- Camera -->
     <div class="camera-box">
-        <video id="video" autoplay></video>
+        <div class="video-wrapper">
+            <video id="video" autoplay></video>
+            <canvas id="overlay" class="overlay"></canvas>
+        </div>
         <button onclick="startCamera()">Open Camera</button>
     </div>
 
     <!-- Prediction Panel -->
     <div class="panel">
         <h2>Prediction</h2>
-
         <div class="prediction" id="prediction">–</div>
-
-        <div class="confidence-text" id="confidenceText">
-            Confidence: 0%
-        </div>
-
-        <div class="bar-bg">
-            <div class="bar" id="confidenceBar"></div>
-        </div>
+        <div class="confidence-text" id="confidenceText">Confidence: 0%</div>
+        <div class="bar-bg"><div class="bar" id="confidenceBar"></div></div>
     </div>
 
 </div>
@@ -158,24 +163,46 @@
     AI-powered American Sign Language Recognition
 </div>
 
-<canvas id="canvas" width="32" height="32" style="display:none;"></canvas>
+<!-- Hidden canvas for sending ROI -->
+<canvas id="sendCanvas" width="32" height="32" style="display:none;"></canvas>
 
 <script>
 let video = document.getElementById("video");
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+let overlay = document.getElementById("overlay");
+let overlayCtx = overlay.getContext("2d");
+let sendCanvas = document.getElementById("sendCanvas");
+let sendCtx = sendCanvas.getContext("2d");
+
+// ROI coordinates (match Python version logically)
+const ROI_X = 100;
+const ROI_Y = 80;
+const ROI_W = 300;
+const ROI_H = 300;
 
 function startCamera() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
             video.srcObject = stream;
-            setInterval(sendFrame, 400);
+            video.onloadedmetadata = () => {
+                overlay.width = video.videoWidth;
+                overlay.height = video.videoHeight;
+                drawOverlay();
+                setInterval(sendFrame, 400);
+            };
         });
 }
 
+function drawOverlay() {
+    overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+    overlayCtx.strokeStyle = "#00ff99";
+    overlayCtx.lineWidth = 3;
+    overlayCtx.strokeRect(ROI_X, ROI_Y, ROI_W, ROI_H);
+    requestAnimationFrame(drawOverlay);
+}
+
 function sendFrame() {
-    ctx.drawImage(video, 0, 0, 32, 32);
-    let imageData = canvas.toDataURL("image/jpeg");
+    sendCtx.drawImage(video, ROI_X, ROI_Y, ROI_W, ROI_H, 0, 0, 32, 32);
+    let imageData = sendCanvas.toDataURL("image/jpeg");
 
     fetch("/predict", {
         method: "POST",
@@ -185,13 +212,9 @@ function sendFrame() {
     .then(res => res.json())
     .then(data => {
         document.getElementById("prediction").innerText = data.prediction;
-
-        let confPercent = Math.round(data.confidence * 100);
-        document.getElementById("confidenceText").innerText =
-            "Confidence: " + confPercent + "%";
-
-        document.getElementById("confidenceBar").style.width =
-            confPercent + "%";
+        let conf = Math.round(data.confidence * 100);
+        document.getElementById("confidenceText").innerText = "Confidence: " + conf + "%";
+        document.getElementById("confidenceBar").style.width = conf + "%";
     });
 }
 </script>
