@@ -206,7 +206,23 @@ function drawOverlay() {
 }
 
 function sendFrame() {
-    sendCtx.drawImage(video, ROI_X, ROI_Y, ROI_W, ROI_H, 0, 0, 32, 32);
+    // Clear
+    sendCtx.clearRect(0, 0, 32, 32);
+
+    // Flip horizontally (match cv2.flip(frame, 1))
+    sendCtx.save();
+    sendCtx.translate(32, 0);
+    sendCtx.scale(-1, 1);
+
+    // Draw flipped ROI
+    sendCtx.drawImage(
+        video,
+        ROI_X, ROI_Y, ROI_W, ROI_H,
+        0, 0, 32, 32
+    );
+
+    sendCtx.restore();
+
     let imageData = sendCanvas.toDataURL("image/jpeg");
 
     fetch("/predict", {
@@ -218,10 +234,13 @@ function sendFrame() {
     .then(data => {
         document.getElementById("prediction").innerText = data.prediction;
         let conf = Math.round(data.confidence * 100);
-        document.getElementById("confidenceText").innerText = "Confidence: " + conf + "%";
-        document.getElementById("confidenceBar").style.width = conf + "%";
+        document.getElementById("confidenceText").innerText =
+            "Confidence: " + conf + "%";
+        document.getElementById("confidenceBar").style.width =
+            conf + "%";
     });
 }
+
 </script>
 
 </body>
