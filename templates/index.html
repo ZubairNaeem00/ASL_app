@@ -14,25 +14,26 @@
 
         h1 {
             text-align: center;
-            padding: 22px 0;
+            padding: 12px 0;
             margin: 0;
             font-weight: 600;
             letter-spacing: 1px;
+            margin-top: 20px;
         }
 
         .container {
             display: flex;
             justify-content: center;
             align-items: stretch;
-            gap: 35px;
+            gap: 80px;
             padding: 30px;
             flex-wrap: wrap;
         }
 
         /* Camera Section */
         .camera-box {
-            background: #0b0b0b;
-            padding: 20px;
+            background: #151515;
+            padding: 20px 50px 20px 50px;
             border-radius: 14px;
             box-shadow: 0 0 25px rgba(0,255,153,0.25);
             display: flex;
@@ -79,7 +80,7 @@
 
         /* Prediction Panel */
         .panel {
-            background: #0b0b0b;
+            background: #151515;
             padding: 30px 25px;
             border-radius: 14px;
             width: 300px;
@@ -199,7 +200,7 @@ function startCamera() {
 
 function drawOverlay() {
     overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
-    overlayCtx.strokeStyle = "#00ff99";
+    overlayCtx.strokeStyle = "#00ff99a0";
     overlayCtx.lineWidth = 3;
     overlayCtx.strokeRect(ROI_X, ROI_Y, ROI_W, ROI_H);
     requestAnimationFrame(drawOverlay);
