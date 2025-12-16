@@ -9,7 +9,7 @@ import base64
 # --------------------------
 # CONFIG
 # --------------------------
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 IMG_SIZE = (32, 32)
 
 labels = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + ["del", "nothing", "space"]
@@ -86,8 +86,8 @@ def predict():
         "confidence": round(conf.item(), 2)
     })
 
-# --------------------------
-# RUN
-# --------------------------
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
