@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ASL Real-Time Recognition</title>
+    <style>
+        body { text-align: center; font-family: Arial; background: #111; color: white; }
+        video { border: 3px solid #00ff99; margin-top: 20px; }
+        canvas { display: none; }
+        button { padding: 10px 20px; font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>ASL Real-Time Recognition</h1>
+
+<button onclick="startCamera()">Open Camera</button>
+
+<br><br>
+
+<video id="video" width="400" autoplay></video>
+<canvas id="canvas" width="32" height="32"></canvas>
+
+<h2 id="prediction">Prediction: -</h2>
+<h3 id="confidence">Confidence: -</h3>
+
+<script>
+let video = document.getElementById("video");
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => video.srcObject = stream);
+    setInterval(sendFrame, 400);
+}
+
+function sendFrame() {
+    ctx.drawImage(video, 0, 0, 32, 32);
+    let imageData = canvas.toDataURL("image/jpeg");
+
+    fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("prediction").innerText =
+            "Prediction: " + data.prediction;
+        document.getElementById("confidence").innerText =
+            "Confidence: " + data.confidence;
+    });
+}
+</script>
+
+</body>
+</html>
