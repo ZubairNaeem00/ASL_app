@@ -132,6 +132,11 @@
             letter-spacing: 0.5px;
             opacity: 0.85;
         }
+
+        .mirror {
+            transform: scaleX(-1);
+        }
+
     </style>
 </head>
 <body>
@@ -142,7 +147,7 @@
 
     <!-- Camera -->
     <div class="camera-box">
-        <div class="video-wrapper">
+        <div class="video-wrapper mirror">
             <video id="video" autoplay></video>
             <canvas id="overlay" class="overlay"></canvas>
         </div>
