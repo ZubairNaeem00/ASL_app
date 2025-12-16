@@ -1,27 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>ASL Real-Time Recognition</title>
+
     <style>
-        body { text-align: center; font-family: Arial; background: #111; color: white; }
-        video { border: 3px solid #00ff99; margin-top: 20px; }
-        canvas { display: none; }
-        button { padding: 10px 20px; font-size: 18px; margin-top: 20px; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Camera Section */
+        .camera-box {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,255,153,0.25);
+        }
+
+        video {
+            width: 480px;
+            max-width: 100%;
+            border-radius: 10px;
+            border: 3px solid #00ff99;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #00ff99;
+            color: #000;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00cc7a;
+        }
+
+        /* Prediction Panel */
+        .panel {
+            background: #111;
+            padding: 25px;
+            border-radius: 12px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: #00ff99;
+            text-align: center;
+        }
+
+        .prediction {
+            font-size: 72px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .confidence-text {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .bar-bg {
+            background: #333;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 18px;
+        }
+
+        .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff99, #00ccff);
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
 
 <h1>ASL Real-Time Recognition</h1>
 
-<button onclick="startCamera()">Open Camera</button>
+<div class="container">
 
-<br><br>
+    <!-- Camera -->
+    <div class="camera-box">
+        <video id="video" autoplay></video>
+        <button onclick="startCamera()">Open Camera</button>
+    </div>
 
-<video id="video" width="400" autoplay></video>
-<canvas id="canvas" width="32" height="32"></canvas>
+    <!-- Prediction Panel -->
+    <div class="panel">
+        <h2>Prediction</h2>
 
-<h2 id="prediction">Prediction: -</h2>
-<h3 id="confidence">Confidence: -</h3>
+        <div class="prediction" id="prediction">–</div>
+
+        <div class="confidence-text" id="confidenceText">
+            Confidence: 0%
+        </div>
+
+        <div class="bar-bg">
+            <div class="bar" id="confidenceBar"></div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    AI-powered American Sign Language Recognition
+</footer>
+
+<canvas id="canvas" width="32" height="32" style="display:none;"></canvas>
 
 <script>
 let video = document.getElementById("video");
@@ -30,8 +152,10 @@ let ctx = canvas.getContext("2d");
 
 function startCamera() {
     navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => video.srcObject = stream);
-    setInterval(sendFrame, 400);
+        .then(stream => {
+            video.srcObject = stream;
+            setInterval(sendFrame, 400);
+        });
 }
 
 function sendFrame() {
@@ -45,10 +169,14 @@ function sendFrame() {
     })
     .then(res => res.json())
     .then(data => {
-        document.getElementById("prediction").innerText =
-            "Prediction: " + data.prediction;
-        document.getElementById("confidence").innerText =
-            "Confidence: " + data.confidence;
+        document.getElementById("prediction").innerText = data.prediction;
+
+        let confPercent = Math.round(data.confidence * 100);
+        document.getElementById("confidenceText").innerText =
+            "Confidence: " + confPercent + "%";
+
+        document.getElementById("confidenceBar").style.width =
+            confPercent + "%";
     });
 }
 </script>
