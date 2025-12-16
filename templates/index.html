@@ -14,43 +14,49 @@
 
         h1 {
             text-align: center;
-            padding: 20px;
+            padding: 22px 0;
             margin: 0;
             font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .container {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            gap: 40px;
+            align-items: stretch;
+            gap: 35px;
             padding: 30px;
             flex-wrap: wrap;
         }
 
         /* Camera Section */
         .camera-box {
-            background: #111;
+            background: #0b0b0b;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,255,153,0.25);
+            border-radius: 14px;
+            box-shadow: 0 0 25px rgba(0,255,153,0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         video {
-            width: 480px;
+            width: 520px;
             max-width: 100%;
-            border-radius: 10px;
+            height: auto;
+            border-radius: 12px;
             border: 3px solid #00ff99;
+            background: #000;
         }
 
         button {
             width: 100%;
-            margin-top: 15px;
-            padding: 12px;
+            margin-top: 18px;
+            padding: 14px;
             font-size: 18px;
             font-weight: 600;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             background: #00ff99;
             color: #000;
@@ -63,29 +69,34 @@
 
         /* Prediction Panel */
         .panel {
-            background: #111;
-            padding: 25px;
-            border-radius: 12px;
+            background: #0b0b0b;
+            padding: 30px 25px;
+            border-radius: 14px;
             width: 300px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .panel h2 {
             margin-top: 0;
             color: #00ff99;
             text-align: center;
+            margin-bottom: 15px;
         }
 
         .prediction {
             font-size: 72px;
             text-align: center;
-            margin: 20px 0;
+            margin: 10px 0 20px;
             font-weight: bold;
         }
 
         .confidence-text {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
 
         .bar-bg {
@@ -102,11 +113,15 @@
             transition: width 0.3s ease;
         }
 
-        footer {
+        /* Footer strip */
+        .footer-strip {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.35);
+            padding: 12px 0;
             text-align: center;
-            padding: 15px;
             font-size: 14px;
-            opacity: 0.7;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
         }
     </style>
 </head>
@@ -139,9 +154,9 @@
 
 </div>
 
-<footer>
+<div class="footer-strip">
     AI-powered American Sign Language Recognition
-</footer>
+</div>
 
 <canvas id="canvas" width="32" height="32" style="display:none;"></canvas>
 
