@@ -72,7 +72,7 @@ def predict():
     img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     img = cv2.resize(img, IMG_SIZE)
-    img = cv2.GaussianBlur(img, (5, 5), 0)
+    # img = cv2.GaussianBlur(img, (5, 5), 0)
 
     tensor = transform(img).unsqueeze(0).to(device)
 
